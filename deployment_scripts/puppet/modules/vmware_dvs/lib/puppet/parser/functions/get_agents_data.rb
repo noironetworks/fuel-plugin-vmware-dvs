@@ -8,7 +8,7 @@
     vcenter = args[0]['computes']
     puts args[1].inspect
 #    physnet = args[1]["predefined_networks"]["admin_internal_net"]["L2"]["physnet"]
-    physnet = "physnet1"
+    physnet = args[1]["predefined_networks"]["net04"]["L2"]["physnet"]
     netmaps = args[2]["vmware_dvs_net_maps"]
     use_fw_driver = args[2]["vmware_dvs_fw_driver"]
     current_node = args[3].split(".")[0]

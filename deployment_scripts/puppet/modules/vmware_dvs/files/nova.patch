@@ -1,7 +1,7 @@
---- vif.py.orig	2016-04-13 09:08:52.070844687 +0000
-+++ vif.py	2016-04-13 09:18:36.043055887 +0000
+--- a/nova/virt/vmwareapi/vif.py
++++ b/nova/virt/vmwareapi/vif.py
 @@ -152,9 +152,15 @@
- 
+
  def get_network_ref(session, cluster, vif, is_neutron):
      if is_neutron:
 -        network_name = (vif['network']['bridge'] or

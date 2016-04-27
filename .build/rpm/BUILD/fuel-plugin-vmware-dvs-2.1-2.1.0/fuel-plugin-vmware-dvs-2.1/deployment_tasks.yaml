@@ -1,0 +1,115 @@
+- id: vmware-dvs-override-hiera
+  version: 2.0.0
+  groups: ['primary-controller','controller', 'compute-vmware']
+  required_for: [vmware-dvs-network-common-config]
+  requires: [pre_deployment_end]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/override_hiera.pp
+    puppet_modules:  puppet/modules:/etc/puppet/modules
+    timeout: 720
+
+- id: vmware-dvs-setup-neutron-plugin
+  version: 2.0.0
+  groups: ['primary-controller','controller', 'compute-vmware']
+  required_for: [vmware-dvs-network-end]
+  requires: [vmware-dvs-network-common-config,vmware-dvs-override-hiera]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/site.pp
+    puppet_modules:  puppet/modules:/etc/puppet/modules
+    timeout: 720
+
+- id: vmware-dvs-neutron-agent-install
+  version: 2.0.0
+  groups: ['primary-controller','controller','compute-vmware']
+  requires: [vmware-dvs-network-common-config]
+  required_for: [openstack-network]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/agents.pp
+    puppet_modules:  puppet/modules:/etc/puppet/modules
+    timeout: 720
+
+- id: vmware-dvs-controller-compute-vmware
+  version: 2.0.0
+  groups: ['primary-controller','controller']
+  required_for: [vmware-dvs-network-common-config]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/controller-vmware.pp
+    puppet_modules:  puppet/modules:/etc/puppet/modules
+    timeout: 720
+
+- id: vmware-dvs-compute-vmware
+  version: 2.0.0
+  groups: ['compute-vmware']
+  requires:  [vmware-dvs-network-common-config,top-role-compute-vmware]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/compute-vmware.pp
+    puppet_modules:  puppet/modules:/etc/puppet/modules
+    timeout: 720
+
+- id: vmware-dvs-set-neutron-timeout
+  version: 2.0.0
+  groups: ['primary-controller','controller']
+  required_for: [deploy_end]
+  requires: [openstack-network]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/set-neutron-timeout.pp
+    puppet_modules:  puppet/modules:/etc/puppet/modules
+    timeout: 720
+
+# Anchor (empty task) for another tasks, say 'tenant network FW setup starting'
+- id: vmware-dvs-network-start
+  type: skipped
+  version: 2.0.0
+  groups: ['primary-controller','controller','compute-vmware']
+  required_for: [openstack-network]
+  requires: [neutron-keystone, neutron-db, netconfig, openstack-controller, top-role-compute]
+
+- id: vmware-dvs-network-common-config
+  type: puppet
+  version: 2.0.0
+  groups: ['primary-controller','controller','compute-vmware']
+  required_for: [vmware-dvs-compute-vmware, vmware-dvs-network-end]
+  requires: [vmware-dvs-network-start, vmware-dvs-controller-compute-vmware]
+#  condition: "settings:common.use_vcenter.value == true"
+  parameters:
+    puppet_manifest: /etc/puppet/modules/osnailyfacter/modular/openstack-network/openstack-network-compute.pp
+    puppet_modules: /etc/puppet/modules
+    timeout: 1800
+
+# Anchor (empty task) for another tasks, say 'tenant network FW setup done'
+- id: vmware-dvs-network-end
+  type: skipped
+  version: 2.0.0
+  groups: ['primary-controller','controller','compute-vmware']
+  required_for: [deploy_end]
+  requires: []
+
+# POST_DEPLOYMENT TASKS
+- id: vmware-dvs-property-hypervisor_type
+  version: 2.0.0
+  role: ['primary-controller']
+  required_for: [post_deployment_end]
+  requires: [disable_keystone_service_token]
+
+  type: shell
+  parameters:
+    cmd: bash add_hyperv_type.sh 2>&1 | tee -a /tmp/add_hyper_type.log
+    timeout: 240
+
+# explicit restart nova-compute #1557980
+- id: vmware-dvs-restart-nova-compute
+  version: 2.0.0
+  role: [primary-controller, controller, compute-vmware]
+  requires: [post_deployment_start]
+  required_for: [post_deployment_end]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/restart-nova-compute.pp
+    puppet_modules:  puppet/modules:/etc/puppet/modules
+    timeout: 720

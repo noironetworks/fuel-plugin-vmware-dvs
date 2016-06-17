@@ -13,5 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-/usr/bin/dockerctl shell nailgun sed -i -e "/if common_attrs.get('use_vcenter', {}).get('value') is True and/,+5 d" /usr/lib/python2.7/site-packages/nailgun/api/v1/validators/cluster.py
-/usr/bin/dockerctl shell nailgun systemctl restart nailgun.service
+#/usr/bin/dockerctl shell nailgun sed -i -e "/if common_attrs.get('use_vcenter', {}).get('value') is True and/,+5 d" /usr/lib/python2.7/site-packages/nailgun/api/v1/validators/cluster.py
+#/usr/bin/dockerctl shell nailgun systemctl restart nailgun.service
+dockerctl  copy cluster.patch nailgun:/root/.
+/usr/bin/dockerctl shell nailgun yum -y install patch
+dockerctl shell nailgun bash -c "/usr/bin/patch -p4 -N  /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py /root/cluster.patch" || true
+dockerctl  copy start.patch nailgun:/root/.
+dockerctl shell nailgun bash -c "/usr/bin/patch -p4 -N /usr/local/bin/start.sh /root/start.patch" || true

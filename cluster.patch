@@ -1,0 +1,19 @@
+--- /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py_orig  2016-06-17 03:13:31.101056449 +0000
++++ /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py   2016-06-17 03:13:39.108223673 +0000
+@@ -227,11 +227,11 @@ class AttributesValidator(BasicValidator
+         common_attrs = data.get('editable', {}).get('common', {})
+                  net_provider = cluster.net_provider
+
+                  -        if common_attrs.get('use_vcenter', {}).get('value') is True and \
+                  -                net_provider != consts.CLUSTER_NET_PROVIDERS.nova_network:
+                  -                    raise errors.InvalidData(u'vCenter requires Nova Network '
+                  -                                             'to be set as a network provider',
+                  -                                             log_message=True)
+                  +#        if common_attrs.get('use_vcenter', {}).get('value') is True and \
+                  +#                net_provider != consts.CLUSTER_NET_PROVIDERS.nova_network:
+                  +#                    raise errors.InvalidData(u'vCenter requires Nova Network '
+                  +#                                             'to be set as a network provider',
+                  +#                                             log_message=True)
+
+                       @classmethod
+                            def validate_editable_attributes(cls, data):

@@ -1,5 +1,5 @@
---- /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py_orig	2016-06-17 03:13:31.101056449 +0000
-+++ /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py	2016-06-17 03:22:10.215893621 +0000
+--- /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py	2016-06-23 11:26:05.259145404 +0000
++++ /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py_copy	2016-06-23 11:26:24.942558376 +0000
 @@ -227,11 +227,11 @@ class AttributesValidator(BasicValidator
          common_attrs = data.get('editable', {}).get('common', {})
          net_provider = cluster.net_provider

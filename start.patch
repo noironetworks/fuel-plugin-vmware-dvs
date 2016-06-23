@@ -1,7 +1,7 @@
 @@ -11,4 +11,6 @@ ln -sf /etc/fuel/version.yaml /etc/nailg
  puppet apply -v /etc/puppet/modules/nailgun/examples/nailgun-only.pp
 
-  service supervisord stop
-  +/usr/bin/patch -p4 -N  /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py /root/cluster.patch || true
-  +
-   /usr/bin/supervisord -n
+ service supervisord stop
++/usr/bin/patch -p4 -N  /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py /root/cluster.patch || true
++
+ /usr/bin/supervisord -n

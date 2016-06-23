@@ -15,6 +15,7 @@
 
 #/usr/bin/dockerctl shell nailgun sed -i -e "/if common_attrs.get('use_vcenter', {}).get('value') is True and/,+5 d" /usr/lib/python2.7/site-packages/nailgun/api/v1/validators/cluster.py
 #/usr/bin/dockerctl shell nailgun systemctl restart nailgun.service
+cd /var/www/nailgun/plugins/fuel-plugin-vmware-dvs-2.1
 dockerctl  copy cluster.patch nailgun:/root/.
 /usr/bin/dockerctl shell nailgun yum -y install patch
 dockerctl shell nailgun bash -c "/usr/bin/patch -p4 -N  /usr/lib/python2.6/site-packages/nailgun/api/v1/validators/cluster.py /root/cluster.patch" || true
